@@ -1,0 +1,18 @@
+runtime:
+  debug: true
+  seed: 42
+  log_level: INFO
+
+model:
+  provider: ollama
+  name: qwen3.5:9b
+  temperature: 0.0
+
+paths:
+  data_dir: ${DATA_DIR}
+  output_dir: ${OUTPUT_DIR}
+  checkpoint_dir: ${CHECKPOINT_DIR}
+
+experiment:
+  save_predictions: true
+  save_metrics: true
