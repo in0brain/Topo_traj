@@ -20,7 +20,7 @@ data:
   split: test
 
 model:
-  model_name: "/data/models/Qwen2.5-1.5B-Instruct"
+  model_name: "/cloud/cloud-ssd1/models/Qwen2.5-7B-Instruct"
   local_files_only: true
   device: auto
   torch_dtype: float16

@@ -13,29 +13,67 @@ Server v1 extends the local v0 pipeline to 300-500 GSM8K samples and validates e
 
 Current server v1 is still pipeline validation, not a final paper conclusion.
 
-## Clone
+## Clone Or Pull
+
+Clone into the server workspace:
 
 ```bash
-cd /data
+cd /cloud/cloud-ssd1/workspace
 git clone https://github.com/in0brain/Topo_traj.git
 cd Topo_traj
 ```
 
-## Environment
-
-Create the conda environment from the project file:
+If the repository already exists:
 
 ```bash
-conda env create -f environment_topo_traj.yml
-conda activate topo_traj
+cd /cloud/cloud-ssd1/workspace/Topo_traj
+git pull
 ```
 
-Alternatively, create it manually:
+## Environment
+
+Activate the existing conda environment:
 
 ```bash
-conda create -n topo_traj python=3.10 -y
-conda activate topo_traj
-python -m pip install -r requirements_topo_traj.txt
+conda activate /cloud/cloud-ssd1/conda_envs/topo_traj
+```
+
+Install server-compatible Python dependencies from the project root:
+
+```bash
+cd /cloud/cloud-ssd1/workspace/Topo_traj
+python -m pip install -r requirements_topo_traj_server.txt
+```
+
+The server currently has `torch 2.1.0+cu121`, so `requirements_topo_traj_server.txt` does not install or upgrade `torch`. It pins `transformers==4.45.2` to avoid newer Transformers releases that require PyTorch `>= 2.4`.
+
+## Version Check
+
+```bash
+python - <<'PY'
+import torch
+import transformers
+import tokenizers
+import accelerate
+import yaml
+import numpy as np
+
+print("torch:", torch.__version__)
+print("cuda:", torch.cuda.is_available())
+print("transformers:", transformers.__version__)
+print("tokenizers:", tokenizers.__version__)
+print("accelerate:", accelerate.__version__)
+print("numpy:", np.__version__)
+print("yaml ok")
+PY
+```
+
+Expected key versions:
+
+```text
+torch: 2.1.0+cu121
+cuda: True
+transformers: 4.45.2
 ```
 
 ## Model Path
@@ -46,14 +84,14 @@ Open:
 experiments/exp004_topo_traj/configs/topo_traj_server.yaml
 ```
 
-Update:
+Confirm or update:
 
 ```yaml
 model:
-  model_name: "/data/models/Qwen2.5-1.5B-Instruct"
+  model_name: "/cloud/cloud-ssd1/models/Qwen2.5-7B-Instruct"
 ```
 
-Set `model.model_name` to the actual local model directory on the server. The path above is only a template.
+Set `model.model_name` to the actual local model directory on the server if it differs.
 
 ## Initial File Checks
 
@@ -82,12 +120,26 @@ python -m py_compile \
 
 ```bash
 python - <<'PY'
+import yaml
+import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-p = "/data/models/Qwen2.5-1.5B-Instruct"
-tok = AutoTokenizer.from_pretrained(p, local_files_only=True)
-model = AutoModelForCausalLM.from_pretrained(p, local_files_only=True)
-print("loaded", model.config.num_hidden_layers, model.config.hidden_size)
+cfg = yaml.safe_load(open("experiments/exp004_topo_traj/configs/topo_traj_server.yaml", encoding="utf-8"))
+p = cfg["model"]["model_name"]
+
+tok = AutoTokenizer.from_pretrained(p, local_files_only=True, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(
+    p,
+    local_files_only=True,
+    trust_remote_code=True,
+    torch_dtype=torch.float16,
+    device_map="auto",
+)
+
+print("loaded:", p)
+print("layers:", model.config.num_hidden_layers)
+print("hidden_size:", model.config.hidden_size)
+print("cuda:", torch.cuda.is_available())
 PY
 ```
 
@@ -109,26 +161,58 @@ python experiments/exp004_topo_traj/scripts/05_extract_geometry.py --config expe
 python experiments/exp004_topo_traj/scripts/07_extract_topology_raw.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --limit 5
 ```
 
-If you run the smoke test and then want the full 500-sample run, use `--overwrite` for downstream outputs or clean `data/`, `cache/`, `features/`, and `outputs/` first. Do not mix smoke-test artifacts with the final server run.
-
-## Full 300-500 Sample Run
+If you run the smoke test and then want the full 500-sample run, clean the smoke-test artifacts first or use `--overwrite` for downstream outputs. A clean reset of experiment outputs is:
 
 ```bash
-python experiments/exp004_topo_traj/scripts/01_prepare_data.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml
+rm -rf experiments/exp004_topo_traj/data/*.jsonl
+rm -rf experiments/exp004_topo_traj/cache
+rm -rf experiments/exp004_topo_traj/features
+rm -rf experiments/exp004_topo_traj/outputs
+mkdir -p experiments/exp004_topo_traj/logs
+```
 
-python experiments/exp004_topo_traj/scripts/02_generate_cot.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml
+## Full 500-Sample Run
 
-python experiments/exp004_topo_traj/scripts/03_cache_forward.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml
+Use `tmux` before launching the full run:
 
-python experiments/exp004_topo_traj/scripts/04_extract_markers.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite
+```bash
+tmux new -s topo500
+cd /cloud/cloud-ssd1/workspace/Topo_traj
+conda activate /cloud/cloud-ssd1/conda_envs/topo_traj
+```
 
-python experiments/exp004_topo_traj/scripts/05_extract_geometry.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite
+After disconnecting, reattach with:
 
-python experiments/exp004_topo_traj/scripts/06_train_geometry_probe.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite
+```bash
+tmux attach -t topo500
+```
 
-python experiments/exp004_topo_traj/scripts/07_extract_topology_raw.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite
+Run the full pipeline with logs:
 
-python experiments/exp004_topo_traj/scripts/08_train_topology_joint_probe.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite
+```bash
+python experiments/exp004_topo_traj/scripts/01_prepare_data.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml \
+  2>&1 | tee experiments/exp004_topo_traj/logs/01_prepare_data.log
+
+python experiments/exp004_topo_traj/scripts/02_generate_cot.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml \
+  2>&1 | tee experiments/exp004_topo_traj/logs/02_generate_cot.log
+
+python experiments/exp004_topo_traj/scripts/03_cache_forward.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml \
+  2>&1 | tee experiments/exp004_topo_traj/logs/03_cache_forward.log
+
+python experiments/exp004_topo_traj/scripts/04_extract_markers.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite \
+  2>&1 | tee experiments/exp004_topo_traj/logs/04_extract_markers.log
+
+python experiments/exp004_topo_traj/scripts/05_extract_geometry.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite \
+  2>&1 | tee experiments/exp004_topo_traj/logs/05_extract_geometry.log
+
+python experiments/exp004_topo_traj/scripts/06_train_geometry_probe.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite \
+  2>&1 | tee experiments/exp004_topo_traj/logs/06_train_geometry_probe.log
+
+python experiments/exp004_topo_traj/scripts/07_extract_topology_raw.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite \
+  2>&1 | tee experiments/exp004_topo_traj/logs/07_extract_topology_raw.log
+
+python experiments/exp004_topo_traj/scripts/08_train_topology_joint_probe.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --overwrite \
+  2>&1 | tee experiments/exp004_topo_traj/logs/08_train_topology_joint_probe.log
 ```
 
 ## Post-Run Checks
