@@ -1,0 +1,178 @@
+experiment:
+  name: exp004_topo_traj
+  stage: v0
+  seed: 42
+  max_samples: 30
+
+paths:
+  root_dir: experiments/exp004_topo_traj
+  data_dir: experiments/exp004_topo_traj/data
+  output_dir: experiments/exp004_topo_traj/outputs
+  cache_dir: experiments/exp004_topo_traj/cache
+  log_dir: experiments/exp004_topo_traj/logs
+  sample_file: experiments/exp004_topo_traj/data/gsm8k_30.jsonl
+  generations_file: experiments/exp004_topo_traj/data/generations.jsonl
+  debug_preview_file: experiments/exp004_topo_traj/outputs/debug_generations_preview.jsonl
+
+data:
+  dataset_name: gsm8k
+  dataset_config: main
+  split: test
+
+model:
+  model_name: "D:/Models/Qwen2.5-1.5B-Instruct"
+  local_files_only: true
+  device: auto
+  torch_dtype: auto
+  max_new_tokens: 1024
+  temperature: 0.0
+  do_sample: false
+
+prompt:
+  template: |
+    You are solving a math word problem.
+
+    Follow the output format EXACTLY.
+
+    Required format:
+    Step 1: <reasoning>
+    Step 2: <reasoning>
+    Step 3: <reasoning>
+    ...
+    #### <final numeric answer>
+
+    Rules:
+    - Do not use Markdown headings.
+    - Do not write "### Step".
+    - Every reasoning step must start exactly with "Step N:".
+    - The final line must start exactly with "####".
+    - Put only the final numeric answer after "####".
+    - Do not write "Therefore" after the final answer.
+    - Do not write units after the final answer.
+
+    Problem:
+    {question}
+
+evaluation:
+  answer_marker: "####"
+
+cache:
+  forward_dir: experiments/exp004_topo_traj/cache/forward
+  manifest_file: experiments/exp004_topo_traj/cache/forward_manifest.jsonl
+  selected_layers: [12, 20, 27]
+  layer_indexing: block_0_based
+  save_hidden_states: true
+  save_attentions: true
+  cache_dtype: float16
+  max_seq_len: 2048
+  valid_only: true
+  min_steps: 2
+  attn_implementation: eager
+
+markers:
+  marker_dir: experiments/exp004_topo_traj/cache/markers
+  marker_manifest_file: experiments/exp004_topo_traj/cache/markers_manifest.jsonl
+  require_min_steps: 2
+  selected_step_keys: ["K-2", "K-1", "TERM"]
+
+geometry:
+  output_dir: experiments/exp004_topo_traj/features
+  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
+  labels_file: experiments/exp004_topo_traj/features/labels.npy
+  ids_file: experiments/exp004_topo_traj/features/ids.json
+  metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
+  manifest_file: experiments/exp004_topo_traj/features/geometry_manifest.jsonl
+  selected_position_keys: ["K-2", "K-1", "TERM"]
+  selected_layers: [12, 20, 27]
+  output_dtype: float32
+
+probe:
+  output_dir: experiments/exp004_topo_traj/outputs/geometry_probe
+  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
+  labels_file: experiments/exp004_topo_traj/features/labels.npy
+  ids_file: experiments/exp004_topo_traj/features/ids.json
+  metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
+
+  pca_file: experiments/exp004_topo_traj/features/geometry_pca.npy
+  pca_model_file: experiments/exp004_topo_traj/outputs/geometry_probe/pca_model.joblib
+  scaler_file: experiments/exp004_topo_traj/outputs/geometry_probe/scaler.joblib
+
+  metrics_file: experiments/exp004_topo_traj/outputs/geometry_probe/metrics.json
+  predictions_file: experiments/exp004_topo_traj/outputs/geometry_probe/predictions.jsonl
+  report_file: experiments/exp004_topo_traj/outputs/geometry_probe/report.md
+
+  pca_components: 16
+  classifier: logistic_regression
+  class_weight: balanced
+  random_seed: 42
+  test_size: 0.3
+  cv_folds: 5
+
+  feature_mode: full
+  # feature_mode options:
+  # full: use [K-2, K-1, TERM] x [12,20,27] hidden states
+  # term_only: use TERM x all layers
+  # last_step_only: use K-1 x all layers
+  # late_only: use K-1 + TERM x all layers
+
+topology_raw:
+  output_dir: experiments/exp004_topo_traj/features
+  topology_file: experiments/exp004_topo_traj/features/topology_raw.npy
+  labels_file: experiments/exp004_topo_traj/features/topology_labels.npy
+  ids_file: experiments/exp004_topo_traj/features/topology_ids.json
+  metadata_file: experiments/exp004_topo_traj/features/topology_raw_metadata.json
+  manifest_file: experiments/exp004_topo_traj/features/topology_raw_manifest.jsonl
+
+  forward_manifest_file: experiments/exp004_topo_traj/cache/forward_manifest.jsonl
+  marker_manifest_file: experiments/exp004_topo_traj/cache/markers_manifest.jsonl
+
+  selected_position_keys: ["K-2", "K-1", "TERM"]
+  selected_layers: [12, 20, 27]
+
+  window_size: 128
+  topk_edges: 100
+  eps: 1.0e-12
+  output_dtype: float32
+
+  feature_names:
+    - edge_mean
+    - edge_std
+    - edge_max
+    - topk_mass_ratio
+    - attention_entropy
+    - node_in_entropy
+    - effective_edge_count
+    - local_window_size
+
+joint_probe:
+  output_dir: experiments/exp004_topo_traj/outputs/topology_joint_probe
+
+  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
+  geometry_labels_file: experiments/exp004_topo_traj/features/labels.npy
+  geometry_ids_file: experiments/exp004_topo_traj/features/ids.json
+  geometry_metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
+
+  topology_file: experiments/exp004_topo_traj/features/topology_raw.npy
+  topology_labels_file: experiments/exp004_topo_traj/features/topology_labels.npy
+  topology_ids_file: experiments/exp004_topo_traj/features/topology_ids.json
+  topology_metadata_file: experiments/exp004_topo_traj/features/topology_raw_metadata.json
+
+  metrics_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/metrics.json
+  predictions_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/predictions.jsonl
+  report_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/report.md
+
+  random_seed: 42
+  test_size: 0.3
+  cv_folds: 5
+  class_weight: balanced
+  classifier: logistic_regression
+  max_iter: 2000
+
+  geometry_pca_components: 16
+  topology_pca_components: null
+  joint_pca_components: 16
+
+  feature_sets:
+    - geometry_only
+    - topology_only
+    - joint_concat

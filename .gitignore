@@ -1,0 +1,108 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+/.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# mypy / ruff / pyright
+.mypy_cache/
+.ruff_cache/
+.pyright/
+
+# Logs
+*.log
+logs/
+outputs/logs/
+outputs/tmp/
+
+# Experiment outputs
+outputs/preds/
+outputs/metrics/
+outputs/plots/
+experiments/*/cache/
+experiments/*/features/
+experiments/*/outputs/
+experiments/*/logs/
+experiments/exp004_topo_traj/data/*.jsonl
+
+# Checkpoints
+/checkpoints/
+
+# Local models and large model artifacts
+/models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.npy
+*.joblib
+
+# Data
+data/raw/
+data/interim/
+data/processed/
+!data/README.md
+!data/samples/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Keep exp004_topo_traj reproducibility assets trackable
+!requirements_topo_traj.txt
+!environment_topo_traj.yml
+!experiments/exp004_topo_traj/configs/
+!experiments/exp004_topo_traj/configs/**
+!experiments/exp004_topo_traj/scripts/
+!experiments/exp004_topo_traj/scripts/**
+!experiments/exp004_topo_traj/notes.md
+!experiments/exp004_topo_traj/results_summary.md
+!experiments/exp004_topo_traj/SERVER_UPLOAD_MANIFEST.md
+!experiments/exp004_topo_traj/.gitignore

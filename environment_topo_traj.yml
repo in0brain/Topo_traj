@@ -1,0 +1,20 @@
+name: topo_traj
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - torch
+    - transformers
+    - datasets
+    - accelerate
+    - numpy
+    - pandas
+    - scikit-learn
+    - tqdm
+    - pyyaml
+    - safetensors
+    - sentencepiece
+    - protobuf

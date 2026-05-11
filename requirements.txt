@@ -1,0 +1,13 @@
+
+torch
+numpy
+matplotlib
+seaborn
+scikit-learn
+tqdm
+scipy
+transformers
+datasets
+pyyaml
+python-dotenv
+accelerate

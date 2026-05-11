@@ -1,0 +1,23 @@
+name: works_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - pyyaml
+      - python-dotenv
+      - tqdm
+      - numpy
+      - pandas
+      - scikit-learn
+      - matplotlib
+      - seaborn
+      - scipy
+      - torch
+      - transformers
+      - datasets
+      - accelerate
+      - requests
+      - pytest
+      - jupyter
