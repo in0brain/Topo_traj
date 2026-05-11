@@ -1,0 +1,186 @@
+warning: in the working copy of 'experiments/exp004_topo_traj/configs/topo_traj_server.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'experiments/exp004_topo_traj/scripts/README_server.md', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/experiments/exp004_topo_traj/configs/topo_traj_server.yaml b/experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+[1mindex 747e457..fe23a8f 100644[m
+[1m--- a/experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+[1m+++ b/experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+[36m@@ -20,7 +20,7 @@[m [mdata:[m
+   split: test[m
+ [m
+ model:[m
+[31m-  model_name: "/data/models/Qwen2.5-1.5B-Instruct"[m
+[32m+[m[32m  model_name: "/cloud/cloud-ssd1/models/Qwen2.5-7B-Instruct"[m
+   local_files_only: true[m
+   device: auto[m
+   torch_dtype: float16[m
+[1mdiff --git a/experiments/exp004_topo_traj/scripts/README_server.md b/experiments/exp004_topo_traj/scripts/README_server.md[m
+[1mindex 0b148e5..d27598a 100644[m
+[1m--- a/experiments/exp004_topo_traj/scripts/README_server.md[m
+[1m+++ b/experiments/exp004_topo_traj/scripts/README_server.md[m
+[36m@@ -13,29 +13,67 @@[m [mServer v1 extends the local v0 pipeline to 300-500 GSM8K samples and validates e[m
+ [m
+ Current server v1 is still pipeline validation, not a final paper conclusion.[m
+ [m
+[31m-## Clone[m
+[32m+[m[32m## Clone Or Pull[m
+[32m+[m
+[32m+[m[32mClone into the server workspace:[m
+ [m
+ ```bash[m
+[31m-cd /data[m
+[32m+[m[32mcd /cloud/cloud-ssd1/workspace[m
+ git clone https://github.com/in0brain/Topo_traj.git[m
+ cd Topo_traj[m
+ ```[m
+ [m
+[32m+[m[32mIf the repository already exists:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mcd /cloud/cloud-ssd1/workspace/Topo_traj[m
+[32m+[m[32mgit pull[m
+[32m+[m[32m```[m
+[32m+[m
+ ## Environment[m
+ [m
+[31m-Create the conda environment from the project file:[m
+[32m+[m[32mActivate the existing conda environment:[m
+ [m
+ ```bash[m
+[31m-conda env create -f environment_topo_traj.yml[m
+[31m-conda activate topo_traj[m
+[32m+[m[32mconda activate /cloud/cloud-ssd1/conda_envs/topo_traj[m
+ ```[m
+ [m
+[31m-Alternatively, create it manually:[m
+[32m+[m[32mInstall server-compatible Python dependencies from the project root:[m
+ [m
+ ```bash[m
+[31m-conda create -n topo_traj python=3.10 -y[m
+[31m-conda activate topo_traj[m
+[31m-python -m pip install -r requirements_topo_traj.txt[m
+[32m+[m[32mcd /cloud/cloud-ssd1/workspace/Topo_traj[m
+[32m+[m[32mpython -m pip install -r requirements_topo_traj_server.txt[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mThe server currently has `torch 2.1.0+cu121`, so `requirements_topo_traj_server.txt` does not install or upgrade `torch`. It pins `transformers==4.45.2` to avoid newer Transformers releases that require PyTorch `>= 2.4`.[m
+[32m+[m
+[32m+[m[32m## Version Check[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mpython - <<'PY'[m
+[32m+[m[32mimport torch[m
+[32m+[m[32mimport transformers[m
+[32m+[m[32mimport tokenizers[m
+[32m+[m[32mimport accelerate[m
+[32m+[m[32mimport yaml[m
+[32m+[m[32mimport numpy as np[m
+[32m+[m
+[32m+[m[32mprint("torch:", torch.__version__)[m
+[32m+[m[32mprint("cuda:", torch.cuda.is_available())[m
+[32m+[m[32mprint("transformers:", transformers.__version__)[m
+[32m+[m[32mprint("tokenizers:", tokenizers.__version__)[m
+[32m+[m[32mprint("accelerate:", accelerate.__version__)[m
+[32m+[m[32mprint("numpy:", np.__version__)[m
+[32m+[m[32mprint("yaml ok")[m
+[32m+[m[32mPY[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mExpected key versions:[m
+[32m+[m
+[32m+[m[32m```text[m
+[32m+[m[32mtorch: 2.1.0+cu121[m
+[32m+[m[32mcuda: True[m
+[32m+[m[32mtransformers: 4.45.2[m
+ ```[m
+ [m
+ ## Model Path[m
+[36m@@ -46,14 +84,14 @@[m [mOpen:[m
+ experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+ ```[m
+ [m
+[31m-Update:[m
+[32m+[m[32mConfirm or update:[m
+ [m
+ ```yaml[m
+ model:[m
+[31m-  model_name: "/data/models/Qwen2.5-1.5B-Instruct"[m
+[32m+[m[32m  model_name: "/cloud/cloud-ssd1/models/Qwen2.5-7B-Instruct"[m
+ ```[m
+ [m
+[31m-Set `model.model_name` to the actual local model directory on the server. The path above is only a template.[m
+[32m+[m[32mSet `model.model_name` to the actual local model directory on the server if it differs.[m
+ [m
+ ## Initial File Checks[m
+ [m
+[36m@@ -82,12 +120,26 @@[m [mpython -m py_compile \[m
+ [m
+ ```bash[m
+ python - <<'PY'[m
+[32m+[m[32mimport yaml[m
+[32m+[m[32mimport torch[m
+ from transformers import AutoTokenizer, AutoModelForCausalLM[m
+ [m
+[31m-p = "/data/models/Qwen2.5-1.5B-Instruct"[m
+[31m-tok = AutoTokenizer.from_pretrained(p, local_files_only=True)[m
+[31m-model = AutoModelForCausalLM.from_pretrained(p, local_files_only=True)[m
+[31m-print("loaded", model.config.num_hidden_layers, model.config.hidden_size)[m
+[32m+[m[32mcfg = yaml.safe_load(open("experiments/exp004_topo_traj/configs/topo_traj_server.yaml", encoding="utf-8"))[m
+[32m+[m[32mp = cfg["model"]["model_name"][m
+[32m+[m
+[32m+[m[32mtok = AutoTokenizer.from_pretrained(p, local_files_only=True, trust_remote_code=True)[m
+[32m+[m[32mmodel = AutoModelForCausalLM.from_pretrained([m
+[32m+[m[32m    p,[m
+[32m+[m[32m    local_files_only=True,[m
+[32m+[m[32m    trust_remote_code=True,[m
+[32m+[m[32m    torch_dtype=torch.float16,[m
+[32m+[m[32m    device_map="auto",[m
+[32m+[m[32m)[m
+[32m+[m
+[32m+[m[32mprint("loaded:", p)[m
+[32m+[m[32mprint("layers:", model.config.num_hidden_layers)[m
+[32m+[m[32mprint("hidden_size:", model.config.hidden_size)[m
+[32m+[m[32mprint("cuda:", torch.cuda.is_available())[m
+ PY[m
+ ```[m
+ [m
+[36m@@ -109,26 +161,58 @@[m [mpython experiments/exp004_topo_traj/scripts/05_extract_geometry.py --config expe[m
+ python experiments/exp004_topo_traj/scripts/07_extract_topology_raw.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml --limit 5[m
+ ```[m
+ [m
+[31m-If you run the smoke test and then want the full 500-sample run, use `--overwrite` for downstream outputs or clean `data/`, `cache/`, `features/`, and `outputs/` first. Do not mix smoke-test artifacts with the final server run.[m
+[32m+[m[32mIf you run the smoke test and then want the full 500-sample run, clean the smoke-test artifacts first or use `--overwrite` for downstream outputs. A clean reset of experiment outputs is:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mrm -rf experiments/exp004_topo_traj/data/*.jsonl[m
+[32m+[m[32mrm -rf experiments/exp004_topo_traj/cache[m
+[32m+[m[32mrm -rf experiments/exp004_topo_traj/features[m
+[32m+[m[32mrm -rf experiments/exp004_topo_traj/outputs[m
+[32m+[m[32mmkdir -p experiments/exp004_topo_traj/logs[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m## Full 500-Sample Run[m
+ [m
+[31m-## Full 300-500 Sample Run[m
+[32m+[m[32mUse `tmux` before launching the full run:[m
+ [m
+ ```bash[m
+[31m-python experiments/exp004_topo_traj/scripts/01_prepare_data.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+[32m+[m[32mtmux new -s topo500[m
+[32m+[m[32mcd /cloud/cloud-ssd1/workspace/Topo_traj[m
+[32m+[m[32mconda activate /cloud/cloud-ssd1/conda_envs/topo_traj[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mAfter disconnecting, reattach with:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mtmux attach -t topo500[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mRun the full pipeline with logs:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mpython experiments/exp004_topo_traj/scripts/01_prepare_data.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml \[m
+[32m+[m[32m  2>&1 | tee experiments/exp004_topo_traj/logs/01_prepare_data.log[m
+ [m
+[31m-python experiments/exp004_topo_traj/scripts/02_generate_cot.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml[m
+[32m+[m[32mpython experiments/exp004_topo_traj/scripts/02_generate_cot.py --config experiments/exp004_topo_traj/configs/topo_traj_server.yaml \[

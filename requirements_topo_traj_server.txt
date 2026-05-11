@@ -1,0 +1,16 @@
+pyyaml
+datasets
+pandas
+scikit-learn
+tqdm
+joblib
+safetensors
+sentencepiece
+protobuf
+huggingface_hub
+hf_transfer
+
+transformers==4.45.2
+tokenizers>=0.20,<0.21
+accelerate==0.34.2
+numpy<2
