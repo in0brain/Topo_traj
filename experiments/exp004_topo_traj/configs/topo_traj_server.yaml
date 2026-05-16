@@ -1,18 +1,18 @@
 experiment:
-  name: exp004_topo_traj_server
-  stage: v1_server
+  name: exp004_topo_traj_autodl
+  stage: v1_autodl
   seed: 42
   max_samples: 500
 
 paths:
-  root_dir: experiments/exp004_topo_traj
-  data_dir: experiments/exp004_topo_traj/data
-  output_dir: experiments/exp004_topo_traj/outputs
-  cache_dir: experiments/exp004_topo_traj/cache
-  log_dir: experiments/exp004_topo_traj/logs
-  sample_file: experiments/exp004_topo_traj/data/gsm8k_server.jsonl
-  generations_file: experiments/exp004_topo_traj/data/generations_server.jsonl
-  debug_preview_file: experiments/exp004_topo_traj/outputs/debug_generations_preview_server.jsonl
+  root_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj
+  data_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/data
+  output_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs
+  cache_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache
+  log_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/logs
+  sample_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/data/gsm8k_server.jsonl
+  generations_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/data/generations_server.jsonl
+  debug_preview_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/debug_generations_preview_server.jsonl
 
 data:
   dataset_name: gsm8k
@@ -20,7 +20,7 @@ data:
   split: test
 
 model:
-  model_name: "/cloud/cloud-ssd1/models/Qwen2.5-7B-Instruct"
+  model_name: "/root/autodl-tmp/models/Qwen2.5-7B-Instruct"
   local_files_only: true
   device: auto
   torch_dtype: float16
@@ -57,8 +57,8 @@ evaluation:
   answer_marker: "####"
 
 cache:
-  forward_dir: experiments/exp004_topo_traj/cache/forward
-  manifest_file: experiments/exp004_topo_traj/cache/forward_manifest.jsonl
+  forward_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/forward
+  manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/forward_manifest.jsonl
   selected_layers: [12, 20, 27]
   layer_indexing: block_0_based
   save_hidden_states: true
@@ -70,34 +70,34 @@ cache:
   attn_implementation: eager
 
 markers:
-  marker_dir: experiments/exp004_topo_traj/cache/markers
-  marker_manifest_file: experiments/exp004_topo_traj/cache/markers_manifest.jsonl
+  marker_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/markers
+  marker_manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/markers_manifest.jsonl
   require_min_steps: 2
   selected_step_keys: ["K-2", "K-1", "TERM"]
 
 geometry:
-  output_dir: experiments/exp004_topo_traj/features
-  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
-  labels_file: experiments/exp004_topo_traj/features/labels.npy
-  ids_file: experiments/exp004_topo_traj/features/ids.json
-  metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
-  manifest_file: experiments/exp004_topo_traj/features/geometry_manifest.jsonl
+  output_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/features
+  geometry_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_raw.npy
+  labels_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/labels.npy
+  ids_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/ids.json
+  metadata_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_metadata.json
+  manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_manifest.jsonl
   selected_position_keys: ["K-2", "K-1", "TERM"]
   selected_layers: [12, 20, 27]
   output_dtype: float32
 
 probe:
-  output_dir: experiments/exp004_topo_traj/outputs/geometry_probe
-  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
-  labels_file: experiments/exp004_topo_traj/features/labels.npy
-  ids_file: experiments/exp004_topo_traj/features/ids.json
-  metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
-  pca_file: experiments/exp004_topo_traj/features/geometry_pca.npy
-  pca_model_file: experiments/exp004_topo_traj/outputs/geometry_probe/pca_model.joblib
-  scaler_file: experiments/exp004_topo_traj/outputs/geometry_probe/scaler.joblib
-  metrics_file: experiments/exp004_topo_traj/outputs/geometry_probe/metrics.json
-  predictions_file: experiments/exp004_topo_traj/outputs/geometry_probe/predictions.jsonl
-  report_file: experiments/exp004_topo_traj/outputs/geometry_probe/report.md
+  output_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe
+  geometry_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_raw.npy
+  labels_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/labels.npy
+  ids_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/ids.json
+  metadata_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_metadata.json
+  pca_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_pca.npy
+  pca_model_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe/pca_model.joblib
+  scaler_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe/scaler.joblib
+  metrics_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe/metrics.json
+  predictions_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe/predictions.jsonl
+  report_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/geometry_probe/report.md
   pca_components: 16
   classifier: logistic_regression
   class_weight: balanced
@@ -107,14 +107,14 @@ probe:
   feature_mode: full
 
 topology_raw:
-  output_dir: experiments/exp004_topo_traj/features
-  topology_file: experiments/exp004_topo_traj/features/topology_raw.npy
-  labels_file: experiments/exp004_topo_traj/features/topology_labels.npy
-  ids_file: experiments/exp004_topo_traj/features/topology_ids.json
-  metadata_file: experiments/exp004_topo_traj/features/topology_raw_metadata.json
-  manifest_file: experiments/exp004_topo_traj/features/topology_raw_manifest.jsonl
-  forward_manifest_file: experiments/exp004_topo_traj/cache/forward_manifest.jsonl
-  marker_manifest_file: experiments/exp004_topo_traj/cache/markers_manifest.jsonl
+  output_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/features
+  topology_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_raw.npy
+  labels_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_labels.npy
+  ids_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_ids.json
+  metadata_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_raw_metadata.json
+  manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_raw_manifest.jsonl
+  forward_manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/forward_manifest.jsonl
+  marker_manifest_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/cache/markers_manifest.jsonl
   selected_position_keys: ["K-2", "K-1", "TERM"]
   selected_layers: [12, 20, 27]
   window_size: 128
@@ -132,18 +132,18 @@ topology_raw:
     - local_window_size
 
 joint_probe:
-  output_dir: experiments/exp004_topo_traj/outputs/topology_joint_probe
-  geometry_file: experiments/exp004_topo_traj/features/geometry_raw.npy
-  geometry_labels_file: experiments/exp004_topo_traj/features/labels.npy
-  geometry_ids_file: experiments/exp004_topo_traj/features/ids.json
-  geometry_metadata_file: experiments/exp004_topo_traj/features/geometry_metadata.json
-  topology_file: experiments/exp004_topo_traj/features/topology_raw.npy
-  topology_labels_file: experiments/exp004_topo_traj/features/topology_labels.npy
-  topology_ids_file: experiments/exp004_topo_traj/features/topology_ids.json
-  topology_metadata_file: experiments/exp004_topo_traj/features/topology_raw_metadata.json
-  metrics_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/metrics.json
-  predictions_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/predictions.jsonl
-  report_file: experiments/exp004_topo_traj/outputs/topology_joint_probe/report.md
+  output_dir: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/topology_joint_probe
+  geometry_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_raw.npy
+  geometry_labels_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/labels.npy
+  geometry_ids_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/ids.json
+  geometry_metadata_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/geometry_metadata.json
+  topology_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_raw.npy
+  topology_labels_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_labels.npy
+  topology_ids_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_ids.json
+  topology_metadata_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/features/topology_raw_metadata.json
+  metrics_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/topology_joint_probe/metrics.json
+  predictions_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/topology_joint_probe/predictions.jsonl
+  report_file: /root/autodl-tmp/topo_traj/exp004_topo_traj/outputs/topology_joint_probe/report.md
   random_seed: 42
   test_size: 0.3
   cv_folds: 5
